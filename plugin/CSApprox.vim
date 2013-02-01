@@ -377,7 +377,7 @@ function! s:FixupCtermInfo(highlights)
       let hl.cterm[s:attr_map('sp')] = hl.gui['sp']
     endif
 
-    if exists("g:CSApprox_fake_reverse") && g:CSApprox_fake_reverse
+    if g:CSApprox_fake_reverse
       if hl.cterm['reverse'] && hl.cterm.bg == ''
         let hl.cterm.bg = 'fg'
       endif
@@ -892,6 +892,11 @@ endif
 if !exists("g:CSApprox_redirfallback")
   let g:CSApprox_redirfallback = (v:version == 702 && !has('patch52'))
                                \  || v:version < 702
+endif
+
+" {>2} Determin if fake reverse is used
+if !exists('g:CSApprox_fake_reverse')
+  let g:CSApprox_fake_reverse = 0
 endif
 
 " {>1} Autocmds
