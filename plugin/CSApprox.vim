@@ -75,20 +75,6 @@ set cpo&vim
 
 " {>1} Collect info for the set highlights
 
-" {>2} Determine if synIDattr is usable
-" synIDattr() couldn't support 'guisp' until 7.2.052.  This function returns
-" true if :redir is needed to find the 'guisp' attribute, false if synIDattr()
-" is functional.  This test can be overridden by setting the global variable
-" g:CSApprox_redirfallback to 1 (to force use of :redir) or to 0 (to force use
-" of synIDattr()).
-function! s:NeedRedirFallback()
-  if !exists("g:CSApprox_redirfallback")
-    let g:CSApprox_redirfallback = (v:version == 702 && !has('patch52'))
-                                 \  || v:version < 702
-  endif
-  return g:CSApprox_redirfallback
-endfunction
-
 " {>2} Collect and store the highlights
 " Get a dictionary containing information for every highlight group not merely
 " linked to another group.  Return value is a dictionary, with highlight group
@@ -146,7 +132,7 @@ endfunction
 
 " Get guisp using whichever method is specified by _redir_fallback
 function! s:SynGuiSp(idx, name)
-  if !s:NeedRedirFallback()
+  if !g:CSApprox_redirfallback
     return s:SynGuiSpAttr(a:idx)
   else
     return s:SynGuiSpRedir(a:name)
@@ -904,6 +890,19 @@ command! -bang -nargs=1 -complete=file -bar CSApproxSnapshot
 
 " {>2} Manual updates
 command -bang -bar CSApprox call s:CSApprox(strlen("<bang>"))
+
+" {>1} Global variables
+
+" {>2} Determine if synIDattr is usable
+" synIDattr() couldn't support 'guisp' until 7.2.052.  This function returns
+" true if :redir is needed to find the 'guisp' attribute, false if synIDattr()
+" is functional.  This test can be overridden by setting the global variable
+" g:CSApprox_redirfallback to 1 (to force use of :redir) or to 0 (to force use
+" of synIDattr()).
+if !exists("g:CSApprox_redirfallback")
+  let g:CSApprox_redirfallback = (v:version == 702 && !has('patch52'))
+                               \  || v:version < 702
+endif
 
 " {>1} Autocmds
 " Set up an autogroup to hook us on the completion of any :colorscheme command
