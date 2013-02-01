@@ -53,14 +53,6 @@ function! csapprox#per_component#Approximate(r,g,b)
   let greys = csapprox#common#Greys()
   let type = csapprox#common#PaletteType()
 
-  if !exists('s:approximator_cache_'.type)
-    if exists('g:CSApprox_approximator_cache_'.type)
-      let s:approximator_cache_{type} = g:CSApprox_approximator_cache_{type}
-    else
-      let s:approximator_cache_{type} = {}
-    endif
-  endif
-
   let rv = get(s:approximator_cache_{type}, hex, -1)
   if rv != -1
     return rv
@@ -93,3 +85,14 @@ function! csapprox#per_component#Approximate(r,g,b)
   let s:approximator_cache_{type}[hex] = rv
   return rv
 endfunction
+
+for s:type in csapprox#common#PaletteTypes()
+  if !exists('s:approximator_cache_'.s:type)
+    if exists('g:CSApprox_approximator_cache_'.s:type)
+      let s:approximator_cache_{s:type} = g:CSApprox_approximator_cache_{s:type}
+    else
+      let s:approximator_cache_{s:type} = {}
+    endif
+  endif
+endfor
+unlet s:type

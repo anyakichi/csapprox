@@ -67,6 +67,10 @@ function! csapprox#common#PaletteType()
   return type
 endfunction
 
+function! csapprox#common#PaletteTypes()
+  return ['urxvt', 'konsole', 'eterm', 'xterm']
+endfunction
+
 " Retrieve the list of greyscale ramp colors for the current palette
 function! csapprox#common#Greys()
   return (&t_Co == 88 ? s:urxvt_greys : s:xterm_greys)
