@@ -129,7 +129,7 @@ endfunction
 " Get guisp using whichever method is specified by _redir_fallback
 function! s:SynGuiSp(idx, name)
   if !g:CSApprox_redirfallback
-    return s:SynGuiSpAttr(a:idx)
+    return synIDattr(a:idx, 'sp#', 'gui')
   else
     return s:SynGuiSpRedir(a:name)
   endif
@@ -150,11 +150,6 @@ function! s:SynGuiSpRedir(name)
     let temp = substitute(temp, '\s*$', '', '')
   endif
   return temp
-endfunction
-
-" {>3} Implementation for retrieving guisp with synIDattr()
-function! s:SynGuiSpAttr(idx)
-  return synIDattr(a:idx, 'sp#', 'gui')
 endfunction
 
 " {>1} Handle color names
