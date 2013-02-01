@@ -347,27 +347,30 @@ endfunction
 " ensure that the 'sp' attribute is never set for cterm, since no terminal can
 " handle that particular highlight.  If the user wants to display the guisp
 " color, he should map it to either 'fg' or 'bg' using g:CSApprox_attr_map.
+let s:AttrInitializer = {}
+for s:attr in s:PossibleAttributes
+  let s:AttrInitializer[s:attr] = ''
+endfor
+unlet s:attr
 function! s:FixupCtermInfo(highlights)
   for hl in values(a:highlights)
 
     if !has_key(hl, 'cterm')
-      let hl["cterm"] = {}
+      let hl["cterm"] = copy(s:AttrInitializer)
     endif
 
     " Find attributes to be set in the terminal
     for attr in s:PossibleAttributes
-      let hl.cterm[attr] = ''
       if hl.gui[attr] == 1
-        if s:attr_map(attr) != ''
-          let hl.cterm[ s:attr_map(attr) ] = 1
-        endif
+        let hl.cterm[ s:attr_map(attr) ] = 1
       endif
     endfor
 
     for color in [ "bg", "fg" ]
-      let eff_color = color
       if hl.cterm['reverse']
         let eff_color = (color == 'bg' ? 'fg' : 'bg')
+      else
+        let eff_color = color
       endif
 
       let hl.cterm[color] = get(hl.gui, s:attr_map(eff_color), '')
