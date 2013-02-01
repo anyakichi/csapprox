@@ -25,5 +25,9 @@
 
 " The last thing to do when sourced is to run and actually fix up the colors.
 if !has('gui_running') && exists(':CSApprox')
-  CSApprox
+  if exists('g:CSApprox_bang_at_startup') && g:CSApprox_bang_at_startup
+    CSApprox!
+  else
+    CSApprox
+  endif
 endif
