@@ -408,11 +408,6 @@ endfunction
 function! s:SetCtermFromGui(hl)
   let hl = a:hl
 
-  " Set up the default approximator function, if needed
-  if !exists("g:CSApprox_approximator_function")
-    let g:CSApprox_approximator_function = function("s:DefaultApproximator")
-  endif
-
   " Clear existing highlights
   exe 'hi ' . hl.name . ' cterm=NONE ctermbg=NONE ctermfg=NONE'
 
@@ -882,6 +877,11 @@ command! -bang -nargs=1 -complete=file -bar CSApproxSnapshot
 command -bang -bar CSApprox call s:CSApprox(strlen("<bang>"))
 
 " {>1} Global variables
+
+" {>2} Set up the approximator function
+if !exists("g:CSApprox_approximator_function")
+  let g:CSApprox_approximator_function = function("s:DefaultApproximator")
+endif
 
 " {>2} Determine if synIDattr is usable
 " synIDattr() couldn't support 'guisp' until 7.2.052.  This function returns
