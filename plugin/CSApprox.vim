@@ -411,14 +411,13 @@ endfunction
 function! s:SetCtermFromGui(hl)
   let hl = a:hl
 
-  " Clear existing highlights
-  exe 'hi ' . hl.name . ' cterm=NONE ctermbg=NONE ctermfg=NONE'
-
   for which in [ 'bg', 'fg' ]
     let val = hl.cterm[which]
 
     " Skip unset colors
     if val == -1 || val == ""
+      " Clear existing highlights
+      exe 'hi ' . hl.name . ' cterm=NONE ctermbg=NONE ctermfg=NONE'
       continue
     endif
 
@@ -446,7 +445,6 @@ function! s:SetCtermFromGui(hl)
     endif
 
     if val =~? '^[fb]g$'
-      exe 'hi ' . hl.name . ' cterm' . which . '=' . val
       let hl.cterm[which] = val
     elseif val =~ '^#\=\x\{6}$'
       let val = substitute(val, '^#', '', '')
@@ -454,7 +452,6 @@ function! s:SetCtermFromGui(hl)
       let g = str2nr(val[2:3], 16)
       let b = str2nr(val[4:5], 16)
       let hl.cterm[which] = g:CSApprox_approximator_function(r, g, b)
-      exe 'hi ' . hl.name . ' cterm' . which . '=' . hl.cterm[which]
     else
       throw "Internal error handling color: " . val
     endif
@@ -463,10 +460,11 @@ function! s:SetCtermFromGui(hl)
   " Finally, set the attributes
   let attrs = copy(s:PossibleAttributes)
   call filter(attrs, 'hl.cterm[v:val] == 1')
+  let cterm = (attrs == []) ? 'NONE' : join(attrs, ',')
+  let ctermbg = hl.cterm['bg'] == '' ? 'NONE' : hl.cterm['bg']
+  let ctermfg = hl.cterm['fg'] == '' ? 'NONE' : hl.cterm['fg']
 
-  if !empty(attrs)
-    exe 'hi ' . hl.name . ' cterm=' . join(attrs, ',')
-  endif
+  exe 'hi' hl.name 'ctermbg=' . ctermbg 'ctermfg=' . ctermfg 'cterm=' . cterm
 endfunction
 
 
