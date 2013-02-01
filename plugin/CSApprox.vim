@@ -89,40 +89,36 @@ function! s:Highlights(modes)
     let i += 1
 
     " Only interested in groups that exist and aren't linked
-    if synIDtrans(i) == 0
+    let synid = synIDtrans(i)
+    if synid == 0
       break
-    endif
-
-    " Handle vim bug allowing groups with name == "" to be created
-    if synIDtrans(i) != i || len(synIDattr(i, "name")) == 0
+    elseif synid != i
       continue
     endif
 
-    let rv[i] = {}
-    let rv[i].name = synIDattr(i, "name")
+    " Handle vim bug allowing groups with name == "" to be created
+    let synname = synIDattr(i, "name")
+    if synname == ''
+      continue
+    endif
+
+    let v = { 'name': synname, 'fg': '', 'bg': '', 'sp': '' }
 
     for where in a:modes
-      let rv[i][where]  = {}
+      let v[where]  = {}
       for attr in s:PossibleAttributes
-        let rv[i][where][attr] = synIDattr(i, attr, where)
+        let v[where][attr] = synIDattr(i, attr, where)
       endfor
 
-      for attr in [ "fg", "bg" ]
-        let rv[i][where][attr] = synIDattr(i, attr.'#', where)
-      endfor
-
-      if where == "gui"
-        let rv[i][where]["sp"] = s:SynGuiSp(i, rv[i].name)
-      else
-        let rv[i][where]["sp"] = -1
-      endif
-
-      for attr in [ "fg", "bg", "sp" ]
-        if rv[i][where][attr] == -1
-          let rv[i][where][attr] = ''
+      for attr in where == "gui" ? [ "fg", "bg", "sp" ] : [ "fg", "bg" ]
+        let a = synIDattr(i, attr.'#', where)
+        if a != -1
+          let v[where][attr] =  a
         endif
       endfor
     endfor
+
+    let rv[i] = v
   endwhile
 
   return rv
